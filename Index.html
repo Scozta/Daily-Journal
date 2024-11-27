@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daily Planner</title>
+
+  <!-- Include Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Pacifico&family=Roboto&family=Open+Sans&family=Lato&family=Courier+Prime&family=Roboto+Mono&family=Merriweather&family=Monoton&family=Indie+Flower&family=Playwrite+GB+J&display=swap" rel="stylesheet">
+  
+  <!-- Include Chart.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <style>
+    /* Global Box Sizing */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    /* CSS Variables for Themes */
+   :root {
+  /* Background and Text Colors */
+  --background-color: #f7f9fc; /* Light neutral background */
+  --text-color: #1a1a1a; /* Dark text for excellent contrast */
+  --header-bg: #00509e; /* Professional blue for header background */
+  --header-text: #ffffff; /* White text for strong header contrast */
+  --section-bg: #ffffff; /* Clean white for content sections */
+  --section-text: #333333; /* Dark gray for body text */
+  --calendar-text-color: #1a1a1a; /* Consistent with body text */
+  --date-color: #666666; /* Subtle gray for secondary information */
+
+  /* Button Styles */
+  --button-bg: #00509e; /* Professional blue for buttons */
+  --button-text: #ffffff; /* White for clear contrast on buttons */
+  --button-hover-bg: #003f7e; /* Slightly darker blue for hover effect */
+  --button-hover-text: #ffffff; /* Keep hover text consistent */
+  --button-border: #004080; /* Subtle darker blue for button borders */
+  --button-hover-border: #00264d; /* Darkest blue for hover borders */
+  --rename-button-text: #666666; /* Subtle gray for secondary buttons */
+
+  /* Shadow and Border Effects */
+  --shadow-color: rgba(0, 0, 0, 0.1); /* Light shadow for elevation */
+  --border-radius: 5px; /* Subtle rounded corners for buttons/cards */
+
+  /* Typography */
+  --font-family: 'Roboto', sans-serif; /* Clean sans-serif font */
+  --font-size-small: 0.8rem; /* For small text */
+  --font-size-medium: 1rem; /* For standard text */
+  --font-size-large: 1.2rem; /* For headings */
+
+  /* H2 Styling */
+  --h2-color: #003f7e; /* Dark blue for headings */
+  --h2-after-bg: #00509e; /* Professional blue for heading accents */
+
+  /* Emotion Button Colors */
+  --emotion-excited: #ff7f50; /* Coral for excitement */
+  --emotion-happy: #4caf50; /* Green for happiness */
+  --emotion-neutral: #ffc107; /* Amber for neutral */
+  --emotion-sad: #2196f3; /* Blue for sadness */
+  --emotion-angry: #f44336; /* Red for anger */
+
+  /* Utility Colors */
+  --success-color: #4caf50; /* Green for success messages */
+  --warning-color: #ffc107; /* Amber for warnings */
+  --error-color: #f44336; /* Red for errors */
+  --info-color: #2196f3; /* Blue for informational messages */
+}
+    
+
+    /* Theme Styles */
+    body.dark {
+  --background-color: linear-gradient(135deg, #1e1e1e, #2c2c2c);
+  --text-color: #e0e0e0;
+  --header-bg: #333;
+  --header-text: #e0e0e0;
+  --section-bg: #2c2c2c;
+  --section-text: #e0e0e0;
+  --button-bg: #ff5722;
+  --button-text: #fff;
+  --button-hover-bg: #ff7043;
+  --button-hover-border: #ff8a65;
+  --shadow-color: rgba(255, 255, 255, 0.1);
+  --h2-color: #ffab40;
+  --h2-after-bg: #ff9800;
+  --calendar-text-color: #2c2c2c;
+}
+
+    body.pastel {
+  --background-color: linear-gradient(135deg, #f1e4ff, #ffe5f2);
+  --text-color: #333;
+  --header-bg: #ffd1dc;
+  --header-text: #333;
+  --section-bg: #ffffff;
+  --section-text: #555;
+  --button-bg: #a1c4fd;
+  --button-text: #333;
+  --button-hover-bg: #89b6f3;
+  --h2-color: #ff8c8c;
+  --h2-after-bg: #ffc0cb;
+  --calendar-text-color: #333;
+}
+
+    body.neon {
+  --background-color: #000;
+  --text-color: #0ff;
+  --header-bg: #111;
+  --header-text: #0ff;
+  --section-bg: #222;
+  --section-text: #0ff;
+  --button-bg: #000;
+  --button-text: #0ff;
+  --button-hover-bg: #333;
+  --button-hover-border: #0ff;
+  --shadow-color: #0ff;
+  --h2-color: #0ff;
+  --h2-after-bg: #0ff;
+  --calendar-text-color: #000;
+}
+
+/* Glowing Borders and Buttons */
+body.neon button {
+  box-shadow: 0 0 10px var(--button-text), 0 0 20px var(--button-text);
+}
+body.neon button:hover {
+  box-shadow: 0 0 15px var(--button-hover-border), 0 0 30px var(--button-hover-border);
+  
+}
+body.neon {
+  --text-color: #0ff; /* Neon text color */
+  --header-text: #0ff; /* Header text glowing */
+  --glow-color: #0ff; /* Primary glow color */
+}
+
+/* Glowing Text */
+body.neon h1,
+body.neon h2,
+body.neon h3,
+body.neon p,
+body.neon span {
+  color: var(--text-color);
+  text-shadow: 0 0 5px var(--glow-color), /* Soft glow */
+               0 0 10px var(--glow-color), /* Medium glow */
+               0 0 20px var(--glow-color); /* Outer glow */
+}
+
+/* Subtle Glow for Small Text */
+body.neon p,
+body.neon span {
+  text-shadow: 0 0 2px var(--glow-color), 
+               0 0 5px var(--glow-color);
+}
+
+/* Stronger Glow for Large Text */
+body.neon h1,
+body.neon h2 {
+  text-shadow: 0 0 10px var(--glow-color),
+               0 0 20px var(--glow-color),
+               0 0 40px var(--glow-color);
+}
+
+    body.boho {
+  --background-color: linear-gradient(135deg, #f4ede6, #dcd5c8); /* Earthy tones */
+  --text-color: #6e4c3b; /* Rich brown */
+  --header-bg: #c7a28b; /* Warm taupe */
+  --header-text: #6e4c3b;
+  --section-bg: #e9e4dd; /* Neutral warm beige */
+  --section-text: #6e4c3b;
+  --button-bg: #8a6d5b; /* Earthy brown */
+  --button-text: #ffffff; /* White text for contrast */
+  --button-hover-bg: #725642; /* Darker brown */
+  --shadow-color: rgba(110, 76, 59, 0.2); /* Warm shadow */
+  --h2-color: #6e4c3b;
+  --h2-after-bg: #b8997d; /* Accent taupe */
+  --calendar-text-color: #6e4c3b;
+}
+
+    body.beige {
+  --background-color: linear-gradient(135deg, #f5f5dc, #fff8e1); /* Soft neutral */
+  --text-color: #5f4b3e; /* Warm brown */
+  --header-bg: #d3c4b2; /* Muted beige */
+  --header-text: #5f4b3e;
+  --section-bg: #fffaf0; /* Light cream */
+  --section-text: #5f4b3e;
+  --button-bg: #c8b28e; /* Warm beige */
+  --button-text: #5f4b3e;
+  --button-hover-bg: #bca27a; /* Slightly darker beige */
+  --button-hover-text: #fff; /* White for contrast */
+  --shadow-color: rgba(95, 75, 62, 0.2); /* Subtle shadow */
+  --h2-color: #5f4b3e;
+  --h2-after-bg: #c8b28e;
+  --calendar-text-color: #5f4b3e;
+}
+    
+    body.high-contrast-light {
+  --background-color: #ffffff;
+  --text-color: #000000;
+  --header-bg: #000;
+  --header-text: #ffffff;
+  --section-bg: #f4f4f4;
+  --section-text: #000;
+  --button-bg: #000;
+  --button-text: #fff;
+  --button-hover-bg: #333;
+  --h2-color: #000;
+  --h2-after-bg: #000;
+  --calendar-text-color: #000;
+}
+
+body.high-contrast-dark {
+  --background-color: #000;
+  --text-color: #ffffff;
+  --header-bg: #111;
+  --header-text: #ffffff;
+  --section-bg: #222;
+  --section-text: #ffffff;
+  --button-bg: #333;
+  --button-text: #ffffff;
+  --button-hover-bg: #444;
+  --h2-color: #ffffff;
+  --h2-after-bg: #ffffff;
+  --calendar-text-color: #000;
+}
+
+    body.pink {
+  --background-color: linear-gradient(135deg, #ffe6f0, #ffb3c6); /* Soft pink gradient */
+  --text-color: #4d004d; /* Deep magenta */
+  --header-bg: #ff99cc; /* Bright pink */
+  --header-text: #4d004d;
+  --section-bg: #ffe6f0; /* Light pink */
+  --section-text: #4d004d;
+  --button-bg: #ff66b3; /* Vibrant pink */
+  --button-text: #ffffff;
+  --button-hover-bg: #ff338a; /* Darker pink */
+  --button-hover-text: #ffffff;
+  --shadow-color: rgba(255, 102, 179, 0.2); /* Pink shadow */
+  --h2-color: #ff3399;
+  --h2-after-bg: #ff66b3;
+  --calendar-text-color: #4d004d;
+} 
+
+    body.green {
+  --background-color: linear-gradient(135deg, #e0ffe0, #ccffcc); /* Light green gradient */
+  --text-color: #2f4f2f; /* Deep green */
+  --header-bg: #66ff66; /* Bright green */
+  --header-text: #2f4f2f;
+  --section-bg: #ccffcc; /* Pale green */
+  --section-text: #2f4f2f;
+  --button-bg: #33cc33; /* Vibrant green */
+  --button-text: #ffffff;
+  --button-hover-bg: #28a428; /* Darker green */
+  --button-hover-text: #ffffff;
+  --shadow-color: rgba(51, 204, 51, 0.2); /* Green shadow */
+  --h2-color: #2f4f2f;
+  --h2-after-bg: #66ff66;
+  --calendar-text-color: #2f4f2f;
+}
+
+body.emerald {
+  --background-color: linear-gradient(135deg, #004d00, #009933); /* Deep emerald gradient */
+  --text-color: #e0ffe0; /* Pale green for contrast */
+  --header-bg: #006622; /* Rich emerald green */
+  --header-text: #e0ffe0;
+  --section-bg: #003d00; /* Darker emerald */
+  --section-text: #e0ffe0;
+  --button-bg: #009933; /* Bright emerald */
+  --button-text: #ffffff;
+  --button-hover-bg: #006622; /* Dark emerald */
+  --button-hover-text: #ffffff;
+  --shadow-color: rgba(0, 153, 51, 0.4); /* Radiant green shadow */
+  --h2-color: #009933;
+  --h2-after-bg: #00cc66;
+  --calendar-text-color: #006622;
+
+  /* Subtle Shining Effect */
+  --shimmer-color: rgba(0, 255, 128, 0.6);
+}
+body.emerald h1,
+body.emerald button {
+  background: linear-gradient(90deg, var(--h2-color), var(--shimmer-color));
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 5px var(--shimmer-color), 0 0 15px var(--h2-color);
+}
+
+body.sapphire {
+  --background-color: linear-gradient(135deg, #001a33, #004080); /* Deep sapphire gradient */
+  --text-color: #dce7ff; /* Soft blue for contrast */
+  --header-bg: #003366; /* Rich sapphire blue */
+  --header-text: #dce7ff;
+  --section-bg: #00264d; /* Dark sapphire */
+  --section-text: #dce7ff;
+  --button-bg: #004080; /* Vibrant sapphire */
+  --button-text: #ffffff;
+  --button-hover-bg: #00264d; /* Dark sapphire */
+  --button-hover-text: #ffffff;
+  --shadow-color: rgba(0, 64, 128, 0.4); /* Blue shadow */
+  --h2-color: #004080;
+  --h2-after-bg: #0059b3;
+  --calendar-text-color: #003366;
+
+  /* Shining Effect */
+  --shimmer-color: rgba(0, 128, 255, 0.6);
+}
+body.sapphire h1,
+body.sapphire button {
+  background: linear-gradient(90deg, var(--h2-color), var(--shimmer-color));
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 5px var(--shimmer-color), 0 0 15px var(--h2-color);
+}
+
+body.ruby {
+  --background-color: linear-gradient(135deg, #330000, #800000); /* Deep ruby gradient */
+  --text-color: #ffd6d6; /* Soft pinkish-red for contrast */
+  --header-bg: #660000; /* Rich ruby red */
+  --header-text: #ffd6d6;
+  --section-bg: #4d0000; /* Dark ruby */
+  --section-text: #ffd6d6;
+  --button-bg: #800000; /* Bright ruby */
+  --button-text: #ffffff;
+  --button-hover-bg: #660000; /* Dark ruby */
+  --button-hover-text: #ffffff;
+  --shadow-color: rgba(128, 0, 0, 0.4); /* Red shadow */
+  --h2-color: #800000;
+  --h2-after-bg: #ff3333;
+  --calendar-text-color: #4d0000;
+
+  /* Shining Effect */
+  --shimmer-color: rgba(255, 64, 64, 0.6);
+}
+body.ruby h1,
+body.ruby button {
+  background: linear-gradient(90deg, var(--h2-color), var(--shimmer-color));
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 5px var(--shimmer-color), 0 0 15px var(--h2-color);
+}
+
+    /* General Styling */
+body {
+  background: var(--background-color);
+  color: var(--text-color);
+  font-family: var(--current-font, 'Roboto', sans-serif);
+  margin: 0;
+  padding: 0;
+  transition: background 0.5s, color 0.5s, font-family 0.5s;
+}
+
+/* Header Styling */
+#main-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background: var(--header-bg);
+  color: var(--header-text);
+  padding: 20px;
+  box-shadow: 0 2px 4px var(--shadow-color);
+  transition: padding 0.3s ease, background 0.5s, color 0.5s, box-shadow 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  justify-content: center; /* Center the header-content horizontally */
+  align-items: center; /* Center content vertically */
+  overflow: hidden;
+}
+
+/* Header Content */
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  transition: all 0.3s ease-in-out; /* Smooth all changes */
+}
+
+/* Header Left: Name and Date */
+.header-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1 1 75%; /* Grow and shrink, basis 75% */
+  max-width: 75%; /* Ensure it occupies 75% of the header width */
+  overflow: hidden;
+}
+
+.header-left h1 {
+  margin: 0;
+  font-size: clamp(0.8rem, 1.2vw, 2rem); /* Shrinks dynamically */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.header-left .date {
+  margin: 5px 0 0 0;
+  font-size: clamp(0.8rem, 1vw, 1.2rem); /* Slightly smaller for the date */
+  color: var(--date-color);
+  font-family: inherit;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Header Buttons */
+.header-buttons {
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+  align-items: flex-end; /* Align buttons to the right */
+  gap: 5px; /* Spacing between buttons */
+  flex: 0 0 25%; /* Fixed basis 25% */
+  max-width: 25%; /* Ensure buttons occupy 25% of the header */
+  transition: opacity 0.3s ease, visibility 0.3s ease, max-height 0.3s ease;
+}
+
+/* Hidden Buttons on Scroll */
+.header-buttons.hidden {
+  opacity: 0; /* Fully hide buttons */
+  visibility: hidden;
+  max-height: 0; /* Collapse button container */
+  pointer-events: none;
+}
+
+/* Button Styling */
+button {
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  line-height: 1;
+  font-family: inherit;
+  white-space: nowrap; /* Prevents text wrapping */
+  text-align: center;
+  background: var(--button-bg);
+  color: var(--button-text);
+  transition: background 0.3s, color 0.3s, transform 0.2s; /* Smooth hover effect */
+}
+
+button:hover {
+  transform: scale(1.05); /* Slight hover effect */
+  opacity: 0.9;
+}
+
+/* Specific Button Styles */
+#rename-button {
+  background: transparent;
+  color: var(--rename-button-text);
+  border: 1px solid var(--rename-button-text);
+  transition: color 0.3s, background 0.3s, border 0.3s;
+}
+
+#rename-button:hover {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: 2px solid var(--button-bg);
+}
+
+#theme-button,
+#font-button {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: 2px solid var(--button-bg);
+}
+
+#theme-button:hover,
+#font-button:hover {
+  background: var(--button-bg);
+  opacity: 0.8;
+}
+
+/* Scrolled State */
+#main-header.scrolled {
+  padding: 10px 15px; /* Reduce padding on scroll */
+  box-shadow: 0 1px 3px var(--shadow-color);
+  transition: all 0.3s ease-in-out; /* Smooth transitions */
+}
+
+#main-header.scrolled .header-content {
+  flex-direction: column; /* Switch to a vertical layout */
+  justify-content: center;
+  align-items: center; /* Center items vertically and horizontally */
+}
+
+#main-header.scrolled .header-left {
+  flex: 1 1 100%; /* Let header-left take full width */
+  max-width: 100%; /* Allow it to stretch */
+  align-items: center; /* Center-align text */
+  text-align: center;
+}
+
+#main-header.scrolled .header-left h1 {
+  font-size: clamp(0.7rem, 1vw, 1.5rem); /* Shrink even more */
+  margin-bottom: 5px;
+}
+
+#main-header.scrolled .header-left .date {
+  font-size: clamp(0.6rem, 0.8vw, 1rem); /* Smaller font size for the date */
+  text-align: center;
+}
+
+#main-header.scrolled .header-buttons {
+  opacity: 0; /* Hide buttons */
+  visibility: hidden;
+  max-height: 0;
+  pointer-events: none;
+}
+
+    /* Main Content Styling */
+    main {
+      padding: 20px 20px 20px 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    section {
+      padding: 15px;
+      margin: 25px 0;
+      background: var(--section-bg);
+      color: var(--section-text);
+      border-radius: 12px;
+      box-shadow: 0 3px 6px var(--shadow-color);
+      transition: background 0.5s, color 0.5s, box-shadow 0.5s;
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--h2-color);
+      margin-bottom: 15px;
+      margin-top: 5px;
+      font-size: 1.5rem;
+      position: relative;
+    }
+
+    h2::after {
+      content: '';
+      display: block;
+      width: 70%;
+      height: 2px;
+      background: var(--h2-after-bg);
+      margin: 10px auto 0;
+      border-radius: 2px;
+    }
+
+    /* Input and Button Container */
+    .input-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+
+    /* Input Fields */
+    input[type="text"] {
+      flex: 1;
+      background: var(--section-bg);
+      padding: 10px;
+      border: 2px solid #f4a261;
+      border-radius: 8px;
+      font-family: Arial, sans-serif;
+      font-size: 0.9rem;
+      transition: border 0.3s;
+      min-width: 200px;
+      max-width: 100%;
+    }
+
+    input[type="text"]:focus {
+      border-color: #e76f51;
+      outline: none;
+    }
+
+    /* Add Button */
+    .add-button {
+      background: var(--button-bg);
+      color: var(--button-text);
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.3s, color 0.3s, transform 0.2s;
+      min-width: 120px;
+      text-align: center;
+    }
+
+    .add-button:hover {
+      background: var(--button-bg);
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+
+    /* Chore List Styling */
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    ul li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+      margin: 5px 0;
+      background: #e3f2fd;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px var(--shadow-color);
+      font-size: 0.9rem;
+      transition: background 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      position: relative;
+    }
+
+   /* Theme-specific list item backgrounds */
+body.dark ul li {
+  background: #2c2c2c;
+  color: #e0e0e0;
+}
+
+body.pastel ul li {
+  background: #ffe6ff;
+  color: #333;
+}
+
+body.neon ul li {
+  background: #111; /* Darker background to match neon theme */
+  color: #0ff; /* Neon text */
+  text-shadow: 0 0 5px #0ff, 0 0 10px #0ff; /* Glowing text */
+}
+
+body.boho ul li {
+  background: #e6dfd6;
+  color: #6e4c3b;
+}
+
+body.beige ul li {
+  background: #fffaf0;
+  color: #5f4b3e;
+}
+
+body.pink ul li {
+  background: #ffe6f0;
+  color: #4d004d;
+}
+
+body.green ul li {
+  background: #e0ffe0;
+  color: #2f4f2f;
+}
+
+/* Jewel Themes */
+body.emerald ul li {
+  background: #003d00; /* Deep emerald background */
+  color: #e0ffe0; /* Light green text */
+  box-shadow: 0 0 5px rgba(0, 255, 128, 0.3); /* Subtle emerald glow */
+}
+
+body.sapphire ul li {
+  background: #00264d; /* Deep sapphire background */
+  color: #dce7ff; /* Light blue text */
+  box-shadow: 0 0 5px rgba(0, 128, 255, 0.3); /* Subtle sapphire glow */
+}
+
+body.ruby ul li {
+  background: #4d0000; /* Deep ruby background */
+  color: #ffd6d6; /* Soft pinkish-red text */
+  box-shadow: 0 0 5px rgba(255, 64, 64, 0.3); /* Subtle ruby glow */
+}
+
+/* High Contrast Themes */
+body.high-contrast-light ul li {
+  background: #ffffff;
+  color: #000000;
+}
+
+body.high-contrast-dark ul li {
+  background: #000000;
+  color: #ffffff;
+}
+
+    /* Chore Text Styling */
+    ul li span {
+      flex: 1;
+      margin-left: 10px;
+      color: var(--section-text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Remove Button Styling */
+    ul li button {
+      background: #e76f51;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 12px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: background 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    ul li button:hover {
+      background: #c0392b;
+    }
+
+    /* Tracker Buttons Styling */
+    .tracker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin: 10px 0;
+    }
+
+    .tracker button {
+      flex: 1 1 calc(45% - 10px);
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: white;
+      min-width: 100px;
+      position: relative;
+    }
+
+    .tracker button.selected {
+      border: 3px solid #333;
+      opacity: 1;
+    }
+
+    .tracker button:hover {
+      opacity: 0.8;
+    }
+
+    /* Emotion Button Colors */
+    .excited {
+      background: var(--emotion-excited);
+    }
+
+    .happy {
+      background: var(--emotion-happy);
+    }
+
+    .neutral {
+      background: var(--emotion-neutral);
+    }
+
+    .sad {
+      background: var(--emotion-sad);
+    }
+
+    .angry {
+      background: var(--emotion-angry);
+    }
+
+    /* Calendar Styling */
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      margin-top: 15px;
+    }
+
+    .day {
+      position: relative;
+      height: 40px;
+      background: #f1f5f8;
+      text-align: center;
+      line-height: 40px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      transition: background 0.3s ease, color 0.3s ease;
+      box-shadow: 0 2px 4px var(--shadow-color);
+      color: var(--calendar-text-color);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    /* Calendar Day Backgrounds */
+    .day[data-percent="0"] {
+      background: #ffe5e5;
+    }
+
+    .day[data-percent="10"] {
+      background: #ffd8cc;
+    }
+
+    .day[data-percent="25"] {
+      background: #ffffcc;
+    }
+
+    .day[data-percent="50"] {
+      background: #ccffcc;
+    }
+
+    .day[data-percent="75"] {
+      background: #cce5ff;
+    }
+
+    .day[data-percent="100"] {
+      background: #e1ccff;
+    }
+
+    /* Note Mark Styling */
+    .day.has-note::after {
+      content: '';
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      width: 6px;
+      height: 6px;
+      background-color: #ff6347;
+      border-radius: 50%;
+    }
+
+    /* Calendar Navigation */
+.calendar-navigation {
+  display: grid; /* Use grid for layout */
+  grid-template-columns: auto auto auto; /* Equal columns for left button, month, and right button */
+  justify-content: center; /* Center all grid items horizontally */
+  align-items: center; /* Center all grid items vertically */
+  column-gap: 5px; /* Reduce spacing between columns */
+  margin-bottom: 10px;
+}
+
+.calendar-month {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center; /* Center the month text */
+  grid-column: 2; /* Ensure the month stays in the middle column */
+}
+
+/* Emotions Navigation */
+.emotions-navigation {
+  display: grid; /* Use grid for layout */
+  grid-template-columns: auto auto auto; /* Equal columns for left button, month, and right button */
+  justify-content: center; /* Center all grid items horizontally */
+  align-items: center; /* Center all grid items vertically */
+  column-gap: 5px; /* Reduce spacing between columns */
+  margin-bottom: 10px;
+}
+
+.emotions-month {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center; /* Center the month text */
+  grid-column: 2; /* Ensure the month stays in the middle column */
+}
+
+/* General Navigation Buttons */
+.calendar-navigation button,
+.emotions-navigation button {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s, color 0.3s, transform 0.2s;
+  min-width: 40px;
+  text-align: center;
+}
+
+.calendar-navigation button:hover,
+.emotions-navigation button:hover {
+  background: var(--button-bg);
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+    /* Notes Section Styling */
+    #notes {
+      width: 100%;
+      min-height: 150px;
+      padding: 10px;
+      margin: 10px 0;
+      border: 2px solid #f4a261;
+      border-radius: 8px;
+      font-family: var(--current-font);
+      font-size: 0.9rem;
+      transition: border 0.3s;
+      resize: none;
+      background: var(--section-bg);
+      color: var(--section-text);
+      background-image: linear-gradient(to bottom, transparent 29px, #ccc 30px);
+      background-size: 100% 30px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    #notes:focus {
+      border-color: #e76f51;
+      outline: none;
+    }
+
+    /* Scrolled Header Styles */
+    #main-header.scrolled {
+      padding: 10px 20px;
+      background: var(--header-bg);
+      box-shadow: 0 2px 4px var(--shadow-color);
+    }
+
+    #main-header.scrolled .header-content h1 {
+      font-size: 1.5rem;
+    }
+
+    #main-header.scrolled .header-content .date {
+      font-size: 1rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      #main-header {
+        padding: 15px 15px;
+      }
+
+      #main-header.scrolled {
+        padding: 10px 15px;
+      }
+
+      .header-content h1 {
+        font-size: 1.5rem;
+      }
+
+      #main-header.scrolled .header-content h1 {
+        font-size: 1.2rem;
+      }
+
+      .header-content .date {
+        font-size: 1rem;
+      }
+
+      #main-header.scrolled .header-content .date {
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .header-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .calendar-navigation,
+      .emotions-navigation {
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px;
+      }
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 2000; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: var(--section-bg);
+      margin: 0 auto; /* Centered */
+      padding: 20px;
+      border: 1px solid #888;
+      border-radius: 8px;
+      width: 80%; /* Could be more or less, depending on screen size */
+      max-width: 400px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .close-modal {
+      background: transparent;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--text-color);
+    }
+
+    .modal-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .modal-options button {
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s, color 0.3s;
+      text-align: left;
+    }
+
+    /* Theme Button Colors in Modal */
+    .theme-button {
+      background: var(--button-bg);
+      color: var(--button-text);
+    }
+
+    .theme-button:hover {
+      opacity: 0.8;
+    }
+
+    /* Font Button Colors in Modal */
+    .font-button {
+      background: var(--button-bg);
+      color: var(--button-text);
+    }
+
+    .font-button:hover {
+      opacity: 0.8;
+    }
+    /* Reset Theme Class */
+body.reset-theme h1,
+body.reset-theme h2,
+body.reset-theme button {
+  text-shadow: none !important; /* Removes any lingering text-shadow */
+  background: inherit; /* Resets background styling */
+  color: inherit; /* Ensures text color defaults to current theme */
+  box-shadow: none !important; /* Resets any glowing effects */
+  transition: none !important; /* Prevents lingering transitions */
+}
+  </style>
+</head>
+<body>
+  <!-- Header Section -->
+  <header id="main-header">
+    <div class="header-content">
+      <div class="header-top">
+        <h1 id="journal-title">Fancy Bullet Journal</h1>
+        <p class="date" id="current-date"></p>
+      </div>
+      <div class="header-buttons">
+        <button id="rename-button" onclick="toggleRenameInput()">Rename Journal</button>
+        <button id="theme-button" onclick="openThemeModal()">Change Theme</button>
+        <button id="font-button" onclick="openFontModal()">Change Font</button>
+      </div>
+      <!-- Hidden input for renaming journal title -->
+      <input type="text" id="title-input" placeholder="Enter new journal title" style="display: none;" />
+    </div>
+  </header>
+
+  <!-- Theme Selection Modal -->
+  <div id="theme-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Select Theme</h2>
+        <button class="close-modal" onclick="closeThemeModal()">&times;</button>
+      </div>
+      <div class="modal-options">
+  <button class="theme-button" onclick="selectTheme('dark')">Dark</button>
+  <button class="theme-button" onclick="selectTheme('pastel')">Pastel</button>
+  <button class="theme-button" onclick="selectTheme('neon')">Neon</button>
+  <button class="theme-button" onclick="selectTheme('boho')">Boho</button>
+  <button class="theme-button" onclick="selectTheme('beige')">Beige</button>
+  <button class="theme-button" onclick="selectTheme('pink')">Pink</button>
+  <button class="theme-button" onclick="selectTheme('green')">Green</button>
+  <button class="theme-button" onclick="selectTheme('emerald')">Emerald</button>
+  <button class="theme-button" onclick="selectTheme('sapphire')">Sapphire</button>
+  <button class="theme-button" onclick="selectTheme('ruby')">Ruby</button>
+  <button class="theme-button" onclick="selectTheme('high-contrast-light')">High Contrast Light</button>
+  <button class="theme-button" onclick="selectTheme('high-contrast-dark')">High Contrast Dark</button>
+</div>
+    </div>
+  </div>
+
+  <!-- Font Selection Modal -->
+  <div id="font-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Select Font</h2>
+        <button class="close-modal" onclick="closeFontModal()">&times;</button>
+      </div>
+      <div class="modal-options">
+        <button class="font-button" onclick="selectFont('Roboto')">Roboto</button>
+        <button class="font-button" onclick="selectFont('Open Sans')">Open Sans</button>
+        <button class="font-button" onclick="selectFont('Lato')">Lato</button>
+        <button class="font-button" onclick="selectFont('Courier Prime')">Courier Prime</button>
+        <button class="font-button" onclick="selectFont('Roboto Mono')">Roboto Mono</button>
+        <button class="font-button" onclick="selectFont('Dancing Script')">Dancing Script</button>
+        <button class="font-button" onclick="selectFont('Pacifico')">Pacifico</button>
+        <button class="font-button" onclick="selectFont('Merriweather')">Merriweather</button>
+        <button class="font-button" onclick="selectFont('Monoton')">Monoton</button>
+        <button class="font-button" onclick="selectFont('Indie Flower')">Indie Flower</button>
+        <button class="font-button" onclick="selectFont('Playwrite GB J')">Playwrite GB J</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Daily Chores Section -->
+    <section>
+      <h2>Daily Chores</h2>
+      <ul id="daily-chores"></ul>
+      <div class="input-container">
+        <input type="text" id="new-chore" placeholder="Add a new chore">
+        <button class="add-button" onclick="addItem('daily-chores', 'new-chore')">Add</button>
+      </div>
+    </section>
+
+    <!-- Weekly Chores Section -->
+    <section>
+      <h2>Weekly Chores</h2>
+      <ul id="weekly-chores"></ul>
+      <div class="input-container">
+        <input type="text" id="new-weekly-chore" placeholder="Add a new weekly chore">
+        <button class="add-button" onclick="addItem('weekly-chores', 'new-weekly-chore')">Add</button>
+      </div>
+    </section>
+
+    <!-- Monthly Chores Section -->
+    <section>
+      <h2>Monthly Chores</h2>
+      <ul id="monthly-chores"></ul>
+      <div class="input-container">
+        <input type="text" id="new-monthly-chore" placeholder="Add a new monthly chore">
+        <button class="add-button" onclick="addItem('monthly-chores', 'new-monthly-chore')">Add</button>
+      </div>
+    </section>
+
+    <!-- Emotions Tracker Section -->
+    <section>
+      <h2>Emotions Tracker</h2>
+      <div>
+        <h3>Morning</h3>
+        <div class="tracker morning-tracker">
+          <button class="excited" data-emotion="excited" onclick="trackEmotion('morning', 'excited')">🤩 Excited</button>
+          <button class="happy" data-emotion="happy" onclick="trackEmotion('morning', 'happy')">😊 Happy</button>
+          <button class="neutral" data-emotion="neutral" onclick="trackEmotion('morning', 'neutral')">😐 Neutral</button>
+          <button class="sad" data-emotion="sad" onclick="trackEmotion('morning', 'sad')">😢 Sad</button>
+          <button class="angry" data-emotion="angry" onclick="trackEmotion('morning', 'angry')">😡 Angry</button>
+        </div>
+      </div>
+      <div>
+        <h3>Night</h3>
+        <div class="tracker night-tracker">
+          <button class="excited" data-emotion="excited" onclick="trackEmotion('night', 'excited')">🤩 Excited</button>
+          <button class="happy" data-emotion="happy" onclick="trackEmotion('night', 'happy')">😊 Happy</button>
+          <button class="neutral" data-emotion="neutral" onclick="trackEmotion('night', 'neutral')">😐 Neutral</button>
+          <button class="sad" data-emotion="sad" onclick="trackEmotion('night', 'sad')">😢 Sad</button>
+          <button class="angry" data-emotion="angry" onclick="trackEmotion('night', 'angry')">😡 Angry</button>
+        </div>
+      </div>
+      <div>
+        <h3>Summary</h3>
+        <div class="emotions-navigation">
+          <button onclick="prevEmotionMonth()">&#9664;</button>
+          <span class="emotions-month" id="emotions-month-display">November</span>
+          <button onclick="nextEmotionMonth()">&#9654;</button>
+        </div>
+        <div style="position: relative; height: 300px; width: 100%;">
+          <canvas id="emotions-chart" style="width: 100%; height: 100%;"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Monthly Calendar Section -->
+    <section>
+      <h2>Monthly Calendar</h2>
+      <div class="calendar-navigation">
+        <button onclick="prevCalendarMonth()">&#9664;</button>
+        <span class="calendar-month" id="calendar-month-display">November</span>
+        <button onclick="nextCalendarMonth()">&#9654;</button>
+      </div>
+      <div class="calendar" id="calendar"></div>
+    </section>
+
+    <!-- Notes Section -->
+    <section>
+      <h2>Notes</h2>
+      <textarea id="notes" placeholder="Write your notes here..."></textarea>
+      <button class="add-button" onclick="saveNotes()">Save Notes</button>
+    </section>
+  </main>
+
+  <!-- JavaScript Functionality -->
+ <script>
+    // Theme and Font Modal Elements
+    const themeModal = document.getElementById('theme-modal');
+    const fontModal = document.getElementById('font-modal');
+
+    // Open Theme Modal
+    function openThemeModal() {
+      themeModal.style.display = 'flex';
+    }
+
+    // Close Theme Modal
+    function closeThemeModal() {
+      themeModal.style.display = 'none';
+    }
+
+    // Open Font Modal
+    function openFontModal() {
+      fontModal.style.display = 'flex';
+    }
+
+    // Close Font Modal
+    function closeFontModal() {
+      fontModal.style.display = 'none';
+    }
+
+    // Close Modals when clicking outside the content
+    window.onclick = function(event) {
+      if (event.target == themeModal) {
+        themeModal.style.display = 'none';
+      }
+      if (event.target == fontModal) {
+        fontModal.style.display = 'none';
+      }
+    }
+
+    // Theme Selection Function
+  function selectTheme(theme) {
+    // Add a reset class to clean up lingering styles
+    document.body.classList.add('reset-theme');
+
+    // Remove the reset class after a short delay
+    setTimeout(() => {
+      document.body.classList.remove('reset-theme');
+
+      // Apply the new theme by setting the class name
+      document.body.className = theme;
+    }, 50); // Small delay to ensure reset is applied
+  }
+
+  // Optional: Close modal after theme selection
+  function closeThemeModal() {
+    const modal = document.getElementById('theme-modal');
+    modal.style.display = 'none';
+  }
+
+  // Open the theme modal
+  function openThemeModal() {
+    const modal = document.getElementById('theme-modal');
+    modal.style.display = 'block';
+  }
+
+    // Font Selection Function
+    function selectFont(fontName) {
+      const selectedFont = fonts.find(font => font.startsWith(`'${fontName}'`));
+      if (selectedFont) {
+        document.body.style.fontFamily = selectedFont;
+        localStorage.setItem('currentFont', selectedFont);
+      }
+      closeFontModal();
+    }
+
+    // Theme Toggle Functionality
+const themes = [
+  'dark',
+  'pastel',
+  'neon',
+  'boho',
+  'beige',
+  'pink',
+  'green',
+  'emerald',
+  'sapphire',
+  'ruby',
+  'high-contrast-light',
+  'high-contrast-dark',
+];
+let currentTheme = localStorage.getItem('theme') || ''; // Default to root if no theme is saved
+
+// Apply the current theme on page load
+document.body.className = currentTheme;
+
+// Function to switch themes
+function selectTheme(theme) {
+  if (themes.includes(theme)) {
+    // Save the selected theme to localStorage
+    localStorage.setItem('theme', theme);
+
+    // Apply the selected theme
+    document.body.className = theme;
+  } else if (theme === 'root') {
+    // Reset to the root/default theme
+    localStorage.removeItem('theme'); // Clear stored theme
+    document.body.className = ''; // Remove theme classes
+  } else {
+    console.error(`Theme "${theme}" is not a valid theme.`);
+  }
+}
+    // Font Toggle Functionality
+    const fonts = [
+      "'Roboto', sans-serif",
+      "'Open Sans', sans-serif",
+      "'Lato', sans-serif",
+      "'Courier Prime', monospace",
+      "'Roboto Mono', monospace",
+      "'Dancing Script', cursive",
+      "'Pacifico', cursive",
+      "'Merriweather', serif",
+      "'Monoton', cursive",
+      "'Indie Flower', cursive",
+      "'Playwrite GB J', cursive"
+    ];
+    let currentFont = localStorage.getItem('currentFont') || fonts[0];
+
+    // Initialization on DOM Content Loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      // Apply saved theme
+      if (themes.includes(currentTheme)) {
+        document.body.classList.add(currentTheme);
+      } else {
+        document.body.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+
+      // Apply saved font
+      if (fonts.includes(currentFont)) {
+        document.body.style.fontFamily = currentFont;
+      } else {
+        document.body.style.fontFamily = fonts[0];
+        localStorage.setItem('currentFont', fonts[0]);
+      }
+
+      // Initialize journal title
+      const journalTitleElement = document.getElementById('journal-title');
+      const savedTitle = localStorage.getItem('journal-title') || 'Fancy Bullet Journal';
+      journalTitleElement.textContent = savedTitle;
+
+      // Load and render chore lists
+      Object.keys(choreLists).forEach(renderList);
+
+      // Initialize selected months
+      initializeSelectedMonths();
+
+      // Update emotion buttons based on saved data
+      updateEmotionButtonsForSelectedMonth();
+
+      // Render emotions chart
+      renderEmotionChart();
+
+      // Load notes
+      loadNotes();
+
+      // Initialize auto-resize for notes
+      initializeAutoResize();
+
+      // Update calendar based on initial chore completion
+      updateCalendar();
+
+      // Render calendar for selected month
+      renderCalendar();
+
+      // Check and reset moods at midnight
+      checkAndResetMoods();
+
+      // Set interval to check every minute
+      setInterval(checkAndResetMoods, 60000);
+    });
+
+    // Display Current Date
+    function updateCurrentDate() {
+      const today = new Date();
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      const todayString = today.toLocaleDateString(undefined, options);
+      document.getElementById('current-date').textContent = todayString;
+    }
+
+    updateCurrentDate();
+
+    // Chore Lists Initialization
+    const choreLists = {
+      'daily-chores': JSON.parse(localStorage.getItem('daily-chores')) || [
+        { text: 'Make the bed', completed: false },
+        { text: 'Feed the pets', completed: false },
+        { text: 'Water the plants', completed: false },
+      ],
+      'weekly-chores': JSON.parse(localStorage.getItem('weekly-chores')) || [
+        { text: 'Grocery shopping', completed: false },
+        { text: 'Clean the bathrooms', completed: false },
+      ],
+      'monthly-chores': JSON.parse(localStorage.getItem('monthly-chores')) || [
+        { text: 'Pay bills', completed: false },
+        { text: 'Organize the garage', completed: false },
+      ],
+    };
+
+    // Emotions Data Initialization
+    let emotionsData = JSON.parse(localStorage.getItem('emotions-data')) || {};
+
+    // Calendar Notes Initialization
+    let calendarNotes = JSON.parse(localStorage.getItem('calendar-notes')) || {};
+
+    // Calendar Progress Initialization
+    const calendarProgress = JSON.parse(localStorage.getItem('calendar-progress')) || {};
+
+    // Selected Months Initialization
+    let availableEmotionMonths = getAvailableMonths(emotionsData);
+    let availableCalendarMonths = getAvailableMonths(calendarProgress, calendarNotes);
+
+    let selectedEmotionMonthIndex = availableEmotionMonths.length - 1;
+    let selectedCalendarMonthIndex = availableCalendarMonths.length - 1;
+
+    function initializeSelectedMonths() {
+      const currentDate = new Date();
+      const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
+
+      // Ensure current month is available in emotion months
+      if (!availableEmotionMonths.some(date => date.getFullYear() === currentDate.getFullYear() && date.getMonth() === currentDate.getMonth())) {
+        availableEmotionMonths.push(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1));
+        availableEmotionMonths.sort((a, b) => a - b);
+      }
+
+      // Ensure current month is available in calendar months
+      if (!availableCalendarMonths.some(date => date.getFullYear() === currentDate.getFullYear() && date.getMonth() === currentDate.getMonth())) {
+        availableCalendarMonths.push(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1));
+        availableCalendarMonths.sort((a, b) => a - b);
+      }
+
+      // Set selected emotion month to current month
+      selectedEmotionMonthIndex = availableEmotionMonths.findIndex(date => date.getFullYear() === currentDate.getFullYear() && date.getMonth() === currentDate.getMonth());
+      if (selectedEmotionMonthIndex === -1) {
+        selectedEmotionMonthIndex = availableEmotionMonths.length - 1;
+      }
+
+      // Set selected calendar month to current month
+      selectedCalendarMonthIndex = availableCalendarMonths.findIndex(date => date.getFullYear() === currentDate.getFullYear() && date.getMonth() === currentDate.getMonth());
+      if (selectedCalendarMonthIndex === -1) {
+        selectedCalendarMonthIndex = availableCalendarMonths.length - 1;
+      }
+
+      updateEmotionsMonthDisplay();
+      updateCalendarMonthDisplay();
+    }
+
+    // Get Available Months Function
+    function getAvailableMonths(...dataObjects) {
+      const monthsSet = new Set();
+      dataObjects.forEach(dataObj => {
+        Object.keys(dataObj).forEach(key => {
+          const [year, month] = key.split('-').map(Number);
+          if (year && month) {
+            monthsSet.add(`${year}-${month}`);
+          }
+        });
+      });
+      // Convert to sorted array
+      const monthsArray = Array.from(monthsSet).map(m => {
+        const [year, month] = m.split('-').map(Number);
+        return new Date(year, month - 1, 1);
+      }).sort((a, b) => a - b);
+      return monthsArray;
+    }
+
+    // Add Item to Chore List
+    function addItem(listId, inputId) {
+      const input = document.getElementById(inputId);
+      if (input.value.trim() !== "") {
+        const newItem = { text: input.value.trim(), completed: false };
+        choreLists[listId].push(newItem);
+        saveChoreList(listId);
+        renderList(listId);
+        input.value = "";
+        updateCalendar();
+      }
+    }
+
+    // Remove Item from Chore List
+    function removeItem(listId, index) {
+      choreLists[listId].splice(index, 1);
+      saveChoreList(listId);
+      renderList(listId);
+      updateCalendar();
+    }
+
+    // Toggle Chore Completion
+    function toggleChoreCompletion(listId, index) {
+      choreLists[listId][index].completed = !choreLists[listId][index].completed;
+      saveChoreList(listId);
+      updateCalendar();
+      renderList(listId);
+    }
+
+    // Render Chore List
+    function renderList(listId) {
+      const list = document.getElementById(listId);
+      list.innerHTML = '';
+      choreLists[listId].forEach((chore, index) => {
+        const item = document.createElement('li');
+        if (chore.completed) {
+          item.style.textDecoration = 'line-through';
+          item.style.opacity = '0.6';
+        } else {
+          item.style.textDecoration = 'none';
+          item.style.opacity = '1';
+        }
+        item.innerHTML = `
+          <span>${chore.text}</span>
+          <button onclick="removeItem('${listId}', ${index})">Remove</button>
+        `;
+        // Add click event to toggle completion
+        item.addEventListener('click', (e) => {
+          if (e.target.tagName.toLowerCase() !== 'button') {
+            toggleChoreCompletion(listId, index);
+          }
+        });
+        list.appendChild(item);
+      });
+    }
+
+    // Track Emotion Function
+    function trackEmotion(timeOfDay, emotion) {
+      const today = new Date();
+      const dayKey = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+      if (!emotionsData[dayKey]) {
+        emotionsData[dayKey] = { morning: null, night: null };
+      }
+      emotionsData[dayKey][timeOfDay] = emotion;
+      saveEmotionsData();
+
+      const monthKey = `${today.getFullYear()}-${today.getMonth() + 1}`;
+      if (!availableEmotionMonths.some(date => date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth())) {
+        availableEmotionMonths.push(new Date(today.getFullYear(), today.getMonth(), 1));
+        availableEmotionMonths.sort((a, b) => a - b);
+      }
+
+      selectedEmotionMonthIndex = availableEmotionMonths.findIndex(date => date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth());
+
+      updateEmotionsMonthDisplay();
+      renderEmotionButtons(timeOfDay); // Render buttons for the specific timeOfDay
+      renderEmotionChart();
+    }
+
+    // Update Emotion Buttons Styles
+    function updateEmotionButtonsForSelectedMonth() {
+      if (selectedEmotionMonthIndex === -1) return;
+      const selectedMonth = availableEmotionMonths[selectedEmotionMonthIndex];
+      const year = selectedMonth.getFullYear();
+      const month = selectedMonth.getMonth() + 1;
+
+      const buttonsMorning = document.querySelectorAll(`.morning-tracker button`);
+      const buttonsNight = document.querySelectorAll(`.night-tracker button`);
+
+      buttonsMorning.forEach(button => {
+        button.classList.remove('selected');
+        const today = new Date();
+        if (selectedMonth.getFullYear() === today.getFullYear() && selectedMonth.getMonth() === today.getMonth()) {
+          const dayKey = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+          const emotion = emotionsData[dayKey]?.morning;
+          if (emotion === button.getAttribute('data-emotion')) {
+            button.classList.add('selected');
+          }
+        }
+      });
+
+      buttonsNight.forEach(button => {
+        button.classList.remove('selected');
+        const today = new Date();
+        if (selectedMonth.getFullYear() === today.getFullYear() && selectedMonth.getMonth() === today.getMonth()) {
+          const dayKey = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+          const emotion = emotionsData[dayKey]?.night;
+          if (emotion === button.getAttribute('data-emotion')) {
+            button.classList.add('selected');
+          }
+        }
+      });
+    }
+
+    // Emotions Chart Rendering
+    let emotionsChart = null;
+
+    const chartColors = {
+      dark: ['#ff4081', '#81d4fa', '#cfd8dc', '#9575cd', '#e53935'],
+      pastel: ['#ffb3de', '#b3ffab', '#ffffb3', '#ffb3b3', '#ff9999'],
+      neon: ['#ff69b4', '#00ffff', '#ffffff', '#ff1493', '#ff4500'],
+      boho: ['#d28dff', '#a8ff78', '#ffe58f', '#ff8c8c', '#ff6f6f'],
+      beige: ['#ffb6c1', '#98fb98', '#f0e68c', '#dda0dd', '#cd5c5c'],
+      pink: ['#ff1493', '#ff69b4', '#ffb6c1', '#ffc0cb', '#ff8da1'],
+      green: ['#7fff00', '#00ff7f', '#adff2f', '#9acd32', '#32cd32'],
+      playwrite: ['#6A0DAD', '#FFC0CB', '#8A2BE2', '#FF1493', '#00FA9A']
+    };
+
+    function renderEmotionChart() {
+      if (selectedEmotionMonthIndex === -1) {
+        const ctx = document.getElementById('emotions-chart').getContext('2d');
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        return;
+      }
+
+      const selectedMonth = availableEmotionMonths[selectedEmotionMonthIndex];
+      const year = selectedMonth.getFullYear();
+      const month = selectedMonth.getMonth() + 1;
+
+      const totalEmotions = { excited: 0, happy: 0, neutral: 0, sad: 0, angry: 0 };
+
+      Object.keys(emotionsData).forEach(key => {
+        const [y, m, d] = key.split('-').map(Number);
+        if (y === year && m === month) {
+          const dayEmotions = emotionsData[key];
+          if (dayEmotions.morning && totalEmotions.hasOwnProperty(dayEmotions.morning)) {
+            totalEmotions[dayEmotions.morning]++;
+          }
+          if (dayEmotions.night && totalEmotions.hasOwnProperty(dayEmotions.night)) {
+            totalEmotions[dayEmotions.night]++;
+          }
+        }
+      });
+
+      const currentTheme = localStorage.getItem('theme') || 'dark';
+      let colors = chartColors[currentTheme] || chartColors['dark'];
+
+      const currentFontStored = localStorage.getItem('currentFont') || fonts[0];
+      if (currentFontStored.includes('Playwrite GB J')) {
+        colors = chartColors['playwrite'];
+      }
+
+      const data = {
+        labels: ["Excited", "Happy", "Neutral", "Sad", "Angry"],
+        datasets: [{
+          label: 'Emotions Summary',
+          data: Object.values(totalEmotions),
+          backgroundColor: colors,
+        }],
+      };
+
+      if (emotionsChart !== null) {
+        emotionsChart.destroy();
+      }
+
+      emotionsChart = new Chart(document.getElementById('emotions-chart').getContext('2d'), {
+        type: 'pie',
+        data: data,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: {
+                color: getComputedStyle(document.body).getPropertyValue('--text-color').trim(),
+              }
+            }
+          }
+        },
+      });
+    }
+
+    // Calendar Generation
+    function generateCalendar() {
+      if (selectedCalendarMonthIndex === -1) {
+        const calendar = document.getElementById('calendar');
+        calendar.innerHTML = "<p>No calendar data available.</p>";
+        return;
+      }
+
+      const calendar = document.getElementById('calendar');
+      const selectedMonth = availableCalendarMonths[selectedCalendarMonthIndex];
+      const year = selectedMonth.getFullYear();
+      const month = selectedMonth.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      const monthDisplay = document.getElementById('calendar-month-display');
+      const monthName = selectedMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
+      monthDisplay.textContent = monthName;
+
+      calendar.innerHTML = "";
+
+      for (let i = 0; i < firstDay; i++) {
+        const blank = document.createElement('div');
+        blank.className = 'day';
+        calendar.appendChild(blank);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayKey = `${year}-${month + 1}-${day}`;
+        const completionPercent = calendarProgress[dayKey] || 0;
+
+        const dayElement = document.createElement('div');
+        dayElement.className = 'day';
+        dayElement.textContent = day;
+        dayElement.setAttribute('data-percent', completionPercent);
+        dayElement.style.background = getColorByPercent(completionPercent);
+
+        if (calendarNotes[dayKey]) {
+          dayElement.classList.add('has-note');
+        }
+
+        dayElement.addEventListener('click', () => {
+          handleDayClick(dayKey);
+        });
+
+        calendar.appendChild(dayElement);
+      }
+    }
+
+    // Update Calendar Progress
+    function updateCalendar() {
+      if (selectedCalendarMonthIndex === -1) return;
+
+      const selectedMonth = availableCalendarMonths[selectedCalendarMonthIndex];
+      const year = selectedMonth.getFullYear();
+      const month = selectedMonth.getMonth() + 1;
+
+      const daysInMonth = new Date(year, selectedMonth.getMonth() + 1, 0).getDate();
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayKey = `${year}-${month}-${day}`;
+        const totalChores = choreLists['daily-chores'].length;
+        const completedChores = choreLists['daily-chores'].filter(chore => chore.completed).length;
+
+        const completionPercent = totalChores ? Math.floor((completedChores / totalChores) * 100) : 0;
+        calendarProgress[dayKey] = completionPercent;
+      }
+      saveCalendarProgress();
+      renderCalendar();
+    }
+
+    // Get Color Based on Percentage
+    function getColorByPercent(percent) {
+      if (percent === 0) return '#ffe5e5';
+      if (percent <= 10) return '#ffd8cc';
+      if (percent <= 25) return '#ffffcc';
+      if (percent <= 50) return '#ccffcc';
+      if (percent <= 75) return '#cce5ff';
+      return '#e1ccff';
+    }
+
+    // Journal Title Rename Functionality
+    const journalTitleElement = document.getElementById('journal-title');
+    const titleInput = document.getElementById('title-input');
+    const renameButton = document.getElementById('rename-button');
+
+    function toggleRenameInput() {
+      if (titleInput.style.display === 'none' || titleInput.style.display === '') {
+        titleInput.style.display = 'block';
+        titleInput.value = journalTitleElement.textContent;
+        renameButton.textContent = 'Done';
+        renameButton.style.border = `2px solid var(--rename-button-text)`;
+        journalTitleElement.style.display = 'none';
+        titleInput.focus();
+      } else {
+        updateJournalTitle();
+        titleInput.style.display = 'none';
+        renameButton.textContent = 'Rename Journal';
+        renameButton.style.border = 'none';
+        journalTitleElement.style.display = 'block';
+      }
+    }
+
+    function updateJournalTitle() {
+      const newTitle = titleInput.value.trim();
+      journalTitleElement.textContent = newTitle || 'Fancy Bullet Journal';
+      localStorage.setItem('journal-title', newTitle);
+    }
+
+    // Notes Section Functionality
+    function saveNotes() {
+      const notesContent = document.getElementById('notes').value;
+      localStorage.setItem('journal-notes', notesContent);
+      alert('Notes saved!');
+    }
+
+    function loadNotes() {
+      const savedNotes = localStorage.getItem('journal-notes') || '';
+      const notesTextarea = document.getElementById('notes');
+      notesTextarea.value = savedNotes;
+      adjustTextareaHeight(notesTextarea);
+    }
+
+    function adjustTextareaHeight(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
+    function initializeAutoResize() {
+      const notesTextarea = document.getElementById('notes');
+      notesTextarea.addEventListener('input', () => {
+        adjustTextareaHeight(notesTextarea);
+      });
+    }
+
+    // Handle Day Click for Notes
+    function handleDayClick(dayKey) {
+      const existingNote = calendarNotes[dayKey] || '';
+      const note = prompt("Add a note for this day:", existingNote);
+      if (note !== null) {
+        if (note.trim() === "") {
+          delete calendarNotes[dayKey];
+        } else {
+          calendarNotes[dayKey] = note.trim();
+        }
+        saveCalendarNotes();
+      }
+    }
+
+    // Save Calendar Notes
+    function saveCalendarNotes() {
+      localStorage.setItem('calendar-notes', JSON.stringify(calendarNotes));
+      Object.keys(calendarNotes).forEach(key => {
+        const [year, month] = key.split('-').map(Number);
+        const monthDate = new Date(year, month - 1, 1);
+        const monthKey = `${year}-${month}`;
+        if (!availableCalendarMonths.some(date => date.getFullYear() === year && date.getMonth() + 1 === month)) {
+          availableCalendarMonths.push(monthDate);
+          availableCalendarMonths.sort((a, b) => a - b);
+        }
+      });
+      renderCalendar();
+    }
+
+    // Local Storage Save Functions
+    function saveChoreList(listId) {
+      localStorage.setItem(listId, JSON.stringify(choreLists[listId]));
+    }
+
+    function saveEmotionsData() {
+      localStorage.setItem('emotions-data', JSON.stringify(emotionsData));
+    }
+
+    function saveCalendarProgress() {
+      localStorage.setItem('calendar-progress', JSON.stringify(calendarProgress));
+    }
+
+    // Initialization Function
+    function initialize() {
+      Object.keys(choreLists).forEach(renderList);
+      initializeSelectedMonths();
+      updateEmotionButtonsForSelectedMonth();
+      renderEmotionChart();
+      loadNotes();
+    }
+
+    initialize();
+
+    // Scroll Event Handling
+    function handleScroll() {
+      const header = document.getElementById('main-header');
+      const headerButtons = document.querySelector('.header-buttons');
+      const scrollPosition = window.scrollY;
+
+      if (scrollPosition > 50) {
+        header.classList.add('scrolled');
+        headerButtons.classList.add('hidden');
+      } else {
+        header.classList.remove('scrolled');
+        headerButtons.classList.remove('hidden');
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll);
+
+    // Render Calendar Function
+    function renderCalendar() {
+      generateCalendar();
+    }
+
+    // Emotions Month Navigation
+    function prevEmotionMonth() {
+      if (selectedEmotionMonthIndex > 0) {
+        selectedEmotionMonthIndex--;
+        updateEmotionsMonthDisplay();
+        updateEmotionButtonsForSelectedMonth();
+        renderEmotionChart();
+      }
+    }
+
+    function nextEmotionMonth() {
+      if (selectedEmotionMonthIndex < availableEmotionMonths.length - 1) {
+        selectedEmotionMonthIndex++;
+        updateEmotionsMonthDisplay();
+        updateEmotionButtonsForSelectedMonth();
+        renderEmotionChart();
+      }
+    }
+
+    // Calendar Month Navigation
+    function prevCalendarMonth() {
+      if (selectedCalendarMonthIndex > 0) {
+        selectedCalendarMonthIndex--;
+        updateCalendarMonthDisplay();
+        renderCalendar();
+      }
+    }
+
+    function nextCalendarMonth() {
+      if (selectedCalendarMonthIndex < availableCalendarMonths.length - 1) {
+        selectedCalendarMonthIndex++;
+        updateCalendarMonthDisplay();
+        renderCalendar();
+      }
+    }
+
+    // Update Emotions Month Display
+    function updateEmotionsMonthDisplay() {
+      const display = document.getElementById('emotions-month-display');
+      if (selectedEmotionMonthIndex === -1) {
+        display.textContent = 'No Data Available';
+      } else {
+        const selectedMonth = availableEmotionMonths[selectedEmotionMonthIndex];
+        const monthName = selectedMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
+        display.textContent = monthName;
+      }
+    }
+
+    // Update Calendar Month Display
+    function updateCalendarMonthDisplay() {
+      const display = document.getElementById('calendar-month-display');
+      if (selectedCalendarMonthIndex === -1) {
+        display.textContent = 'No Data Available';
+      } else {
+        const selectedMonth = availableCalendarMonths[selectedCalendarMonthIndex];
+        const monthName = selectedMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
+        display.textContent = monthName;
+      }
+    }
+
+    // Function to reset morning and night moods at midnight
+    function resetMoods() {
+      const today = new Date();
+      const dayKey = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+
+      if (emotionsData[dayKey]) {
+        emotionsData[dayKey].morning = null;
+        emotionsData[dayKey].night = null;
+        saveEmotionsData();
+        renderEmotionButtons('morning');
+        renderEmotionButtons('night');
+        renderEmotionChart();
+      }
+    }
+
+    // Function to check and reset moods if it's a new day
+    function checkAndResetMoods() {
+      const lastReset = localStorage.getItem('last-mood-reset');
+      const now = new Date();
+
+      const todayKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+
+      if (lastReset !== todayKey) {
+        resetMoods();
+        localStorage.setItem('last-mood-reset', todayKey);
+      }
+    }
+
+    // Call checkAndResetMoods on page load and every minute
+    // Already called in DOMContentLoaded above
+
+    // Modify renderEmotionButtons to accept timeOfDay
+    function renderEmotionButtons(timeOfDay) {
+      const buttons = document.querySelectorAll(`.${timeOfDay}-tracker button`);
+      const today = new Date();
+      const dayKey = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+
+      buttons.forEach(button => {
+        button.classList.remove('selected');
+        const emotion = emotionsData[dayKey]?.[timeOfDay];
+        if (emotion === button.getAttribute('data-emotion')) {
+          button.classList.add('selected');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
